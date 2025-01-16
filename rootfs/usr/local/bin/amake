@@ -1,0 +1,13 @@
+#!/bin/ash
+  for SRC in /src/* ; do
+    APK_NAME=$(echo ${SRC} | sed  's#/src/##g')
+
+    cd ${APP_ROOT}
+    newapkbuild ${APK_NAME}
+    cp -R ${SRC}/* ${APP_ROOT}/${APK_NAME}
+    cd ${APP_ROOT}/${APK_NAME}
+    abuild checksum
+    abuild -r
+  done
+
+  cp -R ${APP_ROOT}/packages/* /apk
