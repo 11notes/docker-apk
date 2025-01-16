@@ -55,6 +55,16 @@ jobs:
           tags: |
             ${{ env.json_image }}:stable
 
+      - name: trivy CVE check
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'docker.io/${{ env.json_image }}:stable'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
       - name: create release notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
