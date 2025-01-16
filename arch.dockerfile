@@ -22,6 +22,8 @@
     ENV APP_VERSION=${APP_VERSION}
     ENV APP_ROOT=${APP_ROOT}
 
+    ENV APP_APORTS=${APP_ROOT}./aports
+
   # :: multi-stage
     COPY --from=util /docker-util/src /usr/local/bin
 
@@ -56,19 +58,19 @@
 
     USER docker
       RUN set -ex; \
-        abuild-keygen -a -n; 
+        abuild-keygen -a -n;
+
+      RUN set -ex; \
+        cd ${APP_ROOT}; \
+        git init .aports; \
+        cd .aports; \
+        git remote add --no-tags -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
+        git checkout 3.21-stable; \
+        git config core.sparseCheckout true;
 
     USER root
       RUN set -ex; \
         find ${APP_ROOT}/.abuild -name '*.pub' -exec cp "{}" /etc/apk/keys \;
-
-    RUN set -ex; \
-      cd ${APP_ROOT}; \
-      git init .aports; \
-      cd .aports; \
-      git remote add -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
-      git checkout 3.21-stable; \
-      git config core.sparseCheckout true;
 
   # :: copy filesystem changes and set correct permissions
     COPY ./rootfs /

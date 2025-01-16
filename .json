@@ -5,5 +5,7 @@
   "version":"stable",
   "parent":"11notes/alpine:stable",
   "root":"/build",
-  "trivy_skip_dirs":"/build/.aports/testing"
+  "trivy":{
+    "skip_dirs":"/build/.aports/testing"
+  }
 }
