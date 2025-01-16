@@ -56,7 +56,10 @@ jobs:
           tags: |
             ${{ env.json_image }}:stable
 
-      - name: trivy CVE check
+      - name: install trivy
+        uses: aquasecurity/setup-trivy@v0.2.2
+
+      - name: trivy security check of container image
         uses: aquasecurity/trivy-action@0.29.0
         with:
           image-ref: 'docker.io/${{ env.json_image }}:stable'
