@@ -7,7 +7,7 @@
     git clone -b stable https://github.com/11notes/docker-util.git;
 
 # :: Header
-  FROM 11notes/alpine:${APP_VERSION}
+  FROM 11notes/alpine:stable
 
   # :: arguments
     ARG TARGETARCH
