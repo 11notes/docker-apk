@@ -66,7 +66,7 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-          trivyignores: '.trivyignore'
+          trivyignores: '.trivyignore.yaml'
 
       - name: create release notes
         env:
