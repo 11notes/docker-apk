@@ -72,12 +72,6 @@ jobs:
           severity: 'CRITICAL,HIGH'
           trivyignores: '.trivyignore'
 
-      - name: trivy / upload security rating
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
       - name: create release notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
