@@ -9,6 +9,7 @@ on:
 env:
   IMAGE_ARCH: "linux/amd64,linux/arm64"
   TRIVY_DISABLE_VEX_NOTICE: true
+  TRIVY_SHOW_SUPPRESSED: true
 
 jobs:
   build-and-push-image:
@@ -56,10 +57,10 @@ jobs:
           tags: |
             ${{ env.json_image }}:stable
 
-      - name: install trivy
+      - name: trivy / install
         uses: aquasecurity/setup-trivy@v0.2.2
 
-      - name: trivy security check of container image
+      - name: trivy / security check of container image
         uses: aquasecurity/trivy-action@0.29.0
         with:
           image-ref: 'docker.io/${{ env.json_image }}:stable'
@@ -70,6 +71,12 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           trivyignores: '.trivyignore'
+
+      - name: trivy / upload security rating
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: create release notes
         env:
