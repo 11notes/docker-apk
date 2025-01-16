@@ -32,7 +32,11 @@
     RUN set -ex; \
       mkdir -p ${APP_ROOT}; \
       mkdir -p /apk; \
-      mkdir -p /src;
+      mkdir -p /src; \
+      chown -R 1000:1000 \
+        ${APP_ROOT} \
+        /apk \
+        /src;
 
   # :: install application
     RUN set -ex; \
@@ -61,9 +65,7 @@
     COPY ./rootfs /
     RUN set -ex; \
       usermod -d ${APP_ROOT} docker; \
-      chmod +x -R /usr/local/bin; \
-      chown -R 1000:1000 \
-        ${APP_ROOT};
+      chmod +x -R /usr/local/bin;
 
 # :: Start
   USER docker
