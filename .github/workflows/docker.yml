@@ -60,11 +60,13 @@ jobs:
         uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: 'docker.io/${{ env.json_image }}:stable'
+          hide-progress: true
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+          trivyignores: '.trivyignore.yaml'
 
       - name: create release notes
         env:
