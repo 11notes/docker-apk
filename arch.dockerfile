@@ -33,6 +33,7 @@
       mkdir -p ${APP_ROOT}; \
       mkdir -p /apk; \
       mkdir -p /src; \
+      usermod -d ${APP_ROOT} docker; \
       chown -R 1000:1000 \
         ${APP_ROOT} \
         /apk \
@@ -64,7 +65,6 @@
   # :: copy filesystem changes and set correct permissions
     COPY ./rootfs /
     RUN set -ex; \
-      usermod -d ${APP_ROOT} docker; \
       chmod +x -R /usr/local/bin;
 
 # :: Start
