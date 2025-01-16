@@ -63,14 +63,15 @@ jobs:
       - name: trivy / security check of container image
         uses: aquasecurity/trivy-action@0.29.0
         with:
-          image-ref: 'docker.io/${{ env.json_image }}:stable'
-          hide-progress: true
-          format: 'table'
-          exit-code: '1'
+          image-ref: docker.io/${{ env.json_image }}:stable
+          skip-dirs: ${{ env.json_trivy_skip_dirs }}
+          format: json
+          exit-code: 1
+          timeout: 10m0s
           ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          trivyignores: '.trivyignore'
+          hide-progress: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
 
       - name: create release notes
         env:

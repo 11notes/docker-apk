@@ -67,7 +67,7 @@
       git init .aports; \
       cd .aports; \
       git remote add -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
-      git checkout ${APP_VERSION}; \
+      git checkout 3.21-stable; \
       git config core.sparseCheckout true;
 
   # :: copy filesystem changes and set correct permissions
