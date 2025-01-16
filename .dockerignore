@@ -1,4 +1,5 @@
 .git*
+.trivyignore
 *.md
 LICENSE
 maintain/
