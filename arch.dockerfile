@@ -62,6 +62,14 @@
       RUN set -ex; \
         find ${APP_ROOT}/.abuild -name '*.pub' -exec cp "{}" /etc/apk/keys \;
 
+    RUN set -ex; \
+      cd ${APP_ROOT}; \
+      git init .aports; \
+      cd .aports; \
+      git remote add -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
+      git checkout ${APP_VERSION}; \
+      git config core.sparseCheckout true;
+
   # :: copy filesystem changes and set correct permissions
     COPY ./rootfs /
     RUN set -ex; \
