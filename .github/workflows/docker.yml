@@ -50,7 +50,8 @@ jobs:
         with:
           context: .
           file: arch.dockerfile
-          load: true
+          push: true
+          sbom: true
           platforms: ${{ env.IMAGE_ARCH }}
           cache-from: type=registry,ref=${{ env.json_image }}:buildcache
           cache-to: type=registry,ref=${{ env.json_image }}:buildcache,mode=max,compression=zstd,force-compression=true
