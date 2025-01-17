@@ -8,8 +8,6 @@ on:
 
 env:
   IMAGE_ARCH: "linux/amd64,linux/arm64"
-  TRIVY_DISABLE_VEX_NOTICE: true
-  TRIVY_SHOW_SUPPRESSED: true
 
 jobs:
   build-and-push-image:
