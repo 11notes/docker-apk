@@ -2,8 +2,8 @@
   "image":"11notes/apk",
   "description":"Build Alpine apk’s on the fly",
   "name":"apk",
-  "version":"stable",
-  "parent":"11notes/alpine:stable",
+  "version":"3.21",
+  "parent":"11notes/alpine:3.21",
   "root":"/build",
   "trivy":{
     "skip_dirs":"/build/.aports/testing"

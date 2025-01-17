@@ -7,7 +7,7 @@
     git clone -b stable https://github.com/11notes/docker-util.git;
 
 # :: Header
-  FROM 11notes/alpine:stable
+  FROM 11notes/alpine:3.21
 
   # :: arguments
     ARG TARGETARCH
@@ -21,8 +21,6 @@
     ENV APP_NAME=${APP_NAME}
     ENV APP_VERSION=${APP_VERSION}
     ENV APP_ROOT=${APP_ROOT}
-
-    ENV APP_APORTS=${APP_ROOT}./aports
 
   # :: multi-stage
     COPY --from=util /docker-util/src /usr/local/bin
@@ -39,12 +37,15 @@
       chown -R 1000:1000 \
         ${APP_ROOT} \
         /apk \
-        /src;
+        /src;  \
+      apk update;
 
   # :: install application
     RUN set -ex; \
       apk --no-cache --update add \
+        alpine-conf \
         alpine-sdk \
+        ccache \
         git \
         doas; \
       addgroup docker wheel; \
@@ -60,13 +61,13 @@
       RUN set -ex; \
         abuild-keygen -a -n;
 
-      RUN set -ex; \
-        cd ${APP_ROOT}; \
-        git init .aports; \
-        cd .aports; \
-        git remote add --no-tags -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
-        git checkout 3.21-stable; \
-        git config core.sparseCheckout true;
+      #RUN set -ex; \
+        #cd ${APP_ROOT}; \
+        #git init .aports; \
+        #cd .aports; \
+        #git remote add --no-tags -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
+        #git checkout ${APP_VERSION}-stable; \
+        #git config core.sparseCheckout true;
 
     USER root
       RUN set -ex; \
