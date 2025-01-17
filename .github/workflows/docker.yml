@@ -19,10 +19,10 @@ jobs:
       packages: write
 
     steps:   
-      - uses: actions/checkout@11bd719
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: .json to env
-        uses: rgarcia-phi/json-to-variables@v1.1.0
+        uses: rgarcia-phi/json-to-variables@9835d537368468c4e4de5254dc3efeadda183793
         with:
           filename: '.json'
 
@@ -40,13 +40,13 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: qemu
-        uses: docker/setup-qemu-action@53851d1
+        uses: docker/setup-qemu-action@53851d14592bedcffcf25ea515637cff71ef929a
 
       - name: buildx
-        uses: docker/setup-buildx-action@6524bf6
+        uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5
 
       - name: build & scan
-        uses: docker/build-push-action@67a2d40
+        uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d
         with:
           context: .
           file: arch.dockerfile
@@ -61,19 +61,19 @@ jobs:
             local/dev:${{ env.json_version }}
 
       - name: grype / scan
-        uses: anchore/scan-action@abae793
+        uses: anchore/scan-action@abae793926ec39a78ab18002bc7fc45bbbd94342
         with:
           image: local/dev:${{ env.json_version }}
           fail-build: true
           severity-cutoff: high
 
       - name: grype / report
-        uses: github/codeql-action/upload-sarif@48ab28a
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
 
       - name: build & push
-        uses: docker/build-push-action@67a2d40
+        uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d
         with:
           context: .
           file: arch.dockerfile
@@ -113,7 +113,7 @@ jobs:
             --fail
 
       - name: push README.md to docker hub
-        uses: christian-korneck/update-container-description-action@d360055
+        uses: christian-korneck/update-container-description-action@d36005551adeaba9698d8d67a296bd16fa91f8e8
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASS: ${{ secrets.DOCKER_TOKEN }}
