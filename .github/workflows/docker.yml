@@ -40,7 +40,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: qemu
-        uses: docker/setup-qemu-action@v53851d1
+        uses: docker/setup-qemu-action@53851d1
 
       - name: buildx
         uses: docker/setup-buildx-action@6524bf6
