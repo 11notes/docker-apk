@@ -1,4 +1,0 @@
-ignore:
-  - package:
-      name: private-key for apk
-      location: /build/**

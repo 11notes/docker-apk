@@ -12,14 +12,14 @@
 * [11notes/apk](https://github.com/11notes/docker-apk)
 
 # PARENT IMAGE 🏛️
-* [11notes/alpine:3.21]()
+* [11notes/alpine:3.21](https://hub.docker.com/r/11notes/alpine)
 
 # BUILT WITH 🧰
 * [alpine](https://alpinelinux.org)
 
-# TIPS 📌
-* Use a reverse proxy like Traefik, Nginx, HAproxy to terminate TLS with a valid certificate
-* Use Let’s Encrypt certificates to protect your SSL endpoints
-
+# GENERAL TIPS 📌
+* Use a reverse proxy like Traefik, Nginx, HAproxy to terminate TLS and to protect your endpoints
+* Use Let’s Encrypt DNS-01 challenge to obtain valid SSL certificates for your services
+  
 # ElevenNotes™️
-This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-apk/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-apk/issues), thanks . You can find all my repositories on [github](https://github.com/11notes?tab=repositories).
+This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-apk/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-apk/issues), thanks. You can find all my repositories on [github](https://github.com/11notes?tab=repositories).

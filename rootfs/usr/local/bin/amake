@@ -1,14 +1,11 @@
 #!/bin/ash
   if [ ! -z "${1}" ]; then
-    cd ${APP_ROOT}/.aports
-    echo "main/${1}" >> .git/info/sparse-checkout
-    git pull origin master
-    cp -R ./main/${1} /src
+    aportscheckout ${1} ${2}
   fi
 
   for SRC in /src/* ; do
     APK_NAME=$(echo ${SRC} | sed  's#/src/##g')
-    elevenLogJSON info "building ${APK_NAME}"
+    eleven log info "building ${APK_NAME}"
     cd ${APP_ROOT}
     newapkbuild ${APK_NAME}
     cp -R ${SRC}/* ${APP_ROOT}/${APK_NAME}

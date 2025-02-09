@@ -1,5 +1,2 @@
 ### 🪄 Features
-* switch to new github workflow and build process
-
-### 🚀 Updates
-* add alpine aports for sparse checkout
+* add main repository so you can checkout the branches you need

@@ -1,0 +1,10 @@
+#!/bin/ash
+  if [ ! -z "${1}" ]; then
+    eleven log info "sparse checkout ${1}"
+    cd ${APP_ROOT}/.aports
+    git checkout ${2}-stable
+    git pull; \
+    echo "main/${1}" >> .git/info/sparse-checkout
+    git pull origin master
+    cp -R ./main/${1} /src
+  fi

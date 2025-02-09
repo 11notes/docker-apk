@@ -1,13 +1,13 @@
-# :: Util
-  FROM alpine AS util
+ARG APP_VERSION=stable
 
+# :: Util
+  FROM alpine/git AS util
+  ARG NO_CACHE
   RUN set -ex; \
-    apk add --no-cache \
-      git; \
-    git clone -b stable https://github.com/11notes/docker-util.git;
+    git clone https://github.com/11notes/docker-util.git;
 
 # :: Header
-  FROM 11notes/alpine:3.21
+  FROM 11notes/alpine:${APP_VERSION}
 
   # :: arguments
     ARG TARGETARCH
@@ -23,7 +23,7 @@
     ENV APP_ROOT=${APP_ROOT}
 
   # :: multi-stage
-    COPY --from=util /docker-util/src /usr/local/bin
+    COPY --from=util /git/docker-util/src/ /usr/local/bin
 
 # :: Run
   USER root
@@ -66,7 +66,6 @@
         git init .aports; \
         cd .aports; \
         git remote add --no-tags -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
-        git checkout ${APP_VERSION}-stable; \
         git config core.sparseCheckout true;
 
     USER root

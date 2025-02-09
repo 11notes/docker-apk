@@ -4,8 +4,5 @@
   "name":"apk",
   "version":"3.21",
   "parent":"11notes/alpine:3.21",
-  "root":"/build",
-  "trivy":{
-    "skip_dirs":"/build/.aports/testing"
-  }
+  "root":"/build"
 }
