@@ -1,8 +1,12 @@
 {
   "image":"11notes/apk",
-  "description":"Build Alpine apk’s on the fly",
+  "description":"Build Alpine apk on the fly",
   "name":"apk",
+  
   "version":"3.21",
+  "stable":"3.21",
+  "latest":"3.21",
+
   "parent":"11notes/alpine:3.21",
   "root":"/build"
 }
