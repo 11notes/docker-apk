@@ -1,6 +1,6 @@
 #!/bin/ash
   if [ ! -z "${1}" ]; then
-    eleven log info "sparse checkout ${1}"
+    eleven log info "sparse checkout ${1} on ${2}"
     cd ${APP_ROOT}/.aports
     git checkout ${2}-stable
     git pull; \
