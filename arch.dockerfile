@@ -1,10 +1,7 @@
 ARG APP_VERSION=stable
 
 # :: Util
-  FROM alpine/git AS util
-  ARG NO_CACHE
-  RUN set -ex; \
-    git clone https://github.com/11notes/docker-util.git;
+  FROM 11notes/util AS util
 
 # :: Header
   FROM 11notes/alpine:${APP_VERSION}
@@ -23,7 +20,7 @@ ARG APP_VERSION=stable
     ENV APP_ROOT=${APP_ROOT}
 
   # :: multi-stage
-    COPY --from=util /git/docker-util/src/ /usr/local/bin
+    COPY --from=util /usr/local/bin/ /usr/local/bin
 
 # :: Run
   USER root
@@ -37,8 +34,7 @@ ARG APP_VERSION=stable
       chown -R 1000:1000 \
         ${APP_ROOT} \
         /apk \
-        /src;  \
-      apk update;
+        /src;
 
   # :: install application
     RUN set -ex; \
@@ -66,7 +62,8 @@ ARG APP_VERSION=stable
         git init .aports; \
         cd .aports; \
         git remote add --no-tags -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
-        git config core.sparseCheckout true;
+        git config core.sparseCheckout true; \
+        git config pull.rebase true;
 
     USER root
       RUN set -ex; \

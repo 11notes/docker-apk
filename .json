@@ -1,12 +1,17 @@
 {
   "image":"11notes/apk",
-  "description":"Build Alpine apk on the fly",
   "name":"apk",
+  "root":"/build",
   
-  "version":"3.21",
-  "stable":"3.21",
-  "latest":"3.21",
+  "semver":{
+    "version":"3.21",
+    "stable":"3.21"
+  },
 
-  "parent":"11notes/alpine:3.21",
-  "root":"/build"
+  "readme":{
+    "description":"Build Alpine apk on the fly",
+    "parent":{
+      "image":"11notes/alpine:3.21"
+    }
+  }
 }
