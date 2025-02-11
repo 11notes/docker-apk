@@ -7,7 +7,6 @@
     APK_NAME=$(echo ${SRC} | sed  's#/src/##g')
     APP_PKGVER=$(grep -E 'pkgver=' /src/${APK_NAME}/APKBUILD | sed 's/pkgver=//g')
     eleven log info "building ${APK_NAME} v${APP_PKGVER}"
-    apk update
     cd ${APP_ROOT}
     newapkbuild ${APK_NAME}
     cp -R ${SRC}/* ${APP_ROOT}/${APK_NAME}

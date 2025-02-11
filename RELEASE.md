@@ -1,2 +1,2 @@
 ### 🪄 Features
-* add auto update before build
+* add apk index

@@ -36,7 +36,8 @@ ARG APP_VERSION=stable
       chown -R 1000:1000 \
         ${APP_ROOT} \
         /apk \
-        /src;
+        /src; \
+      apk update;
 
   # :: install application
     RUN set -ex; \
