@@ -1,2 +1,2 @@
 ### 🪄 Features
-* switch to lighter version of aports checkout
+* add auto update before build
