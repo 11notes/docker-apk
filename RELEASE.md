@@ -1,2 +1,2 @@
 ### 🪄 Features
-* add auto update daily of aports
+* switch to lighter version of aports checkout

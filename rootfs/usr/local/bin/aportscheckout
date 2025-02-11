@@ -1,10 +1,14 @@
 #!/bin/ash
   if [ ! -z "${1}" ]; then
-    eleven log info "sparse checkout ${1} on ${2}"
-    cd ${APP_ROOT}/.aports
-    git checkout ${2}-stable
-    git pull; \
-    echo "main/${1}" >> .git/info/sparse-checkout
-    git pull origin master
-    cp -R ./main/${1} /src
+    eleven log info "sparse checkout ${2} on ${1}"
+    BRANCH=${APORTS}/${1}
+    if [ ! -d "${BRANCH}" ]; then
+      git clone --filter=tree:0 --no-checkout --depth 1 --sparse https://gitlab.alpinelinux.org/alpine/aports.git -b ${1}-stable ${BRANCH}
+    fi
+    cd ${BRANCH}
+    for PKG in ${2}; do
+      git sparse-checkout add main/${PKG}
+    done
+    git checkout
+    cp -R ./main/* /src
   fi

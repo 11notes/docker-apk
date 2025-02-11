@@ -19,6 +19,8 @@ ARG APP_VERSION=stable
     ENV APP_VERSION=${APP_VERSION}
     ENV APP_ROOT=${APP_ROOT}
 
+    ENV APORTS=${APP_ROOT}/.aports
+
   # :: multi-stage
     COPY --from=util /usr/local/bin/ /usr/local/bin
 
@@ -27,7 +29,7 @@ ARG APP_VERSION=stable
 
   # :: prepare image
     RUN set -ex; \
-      mkdir -p ${APP_ROOT}; \
+      mkdir -p ${APORTS}; \
       mkdir -p /apk; \
       mkdir -p /src; \
       usermod -d ${APP_ROOT} docker; \
@@ -56,14 +58,6 @@ ARG APP_VERSION=stable
     USER docker
       RUN set -ex; \
         abuild-keygen -a -n;
-
-      RUN set -ex; \
-        cd ${APP_ROOT}; \
-        git init .aports; \
-        cd .aports; \
-        git remote add --no-tags -f origin https://gitlab.alpinelinux.org/alpine/aports.git; \
-        git config core.sparseCheckout true; \
-        git config pull.rebase true;
 
     USER root
       RUN set -ex; \
