@@ -13,6 +13,7 @@
     cd ${APP_ROOT}/${APK_NAME}
     abuild checksum
     abuild -r
+    rm -rf /src/${APK_NAME}
   done
 
   cp -R ${APP_ROOT}/packages/build/* /apk
