@@ -1,4 +1,4 @@
-name: create and publish docker image
+name: docker
 
 on:
   workflow_dispatch:
@@ -7,31 +7,29 @@ on:
         description: 'set WORKFLOW_GITHUB_RELEASE'
         required: false
         default: 'false'
+
       image:
         description: 'set IMAGE'
         required: false
+
       uid:
         description: 'set IMAGE_UID'
         required: false
+
       gid:
         description: 'set IMAGE_GID'
         required: false
+
       semverprefix:
         description: 'prefix for semver tags'
         required: false
+
       semversuffix:
         description: 'suffix for semver tags'
         required: false
-      dispatch:
-        description: 'run dispatch at end'
-        required: false
-        default: 'false'
-  push:
-    tags:
-      - 'v*'
 
 jobs:
-  build-and-push-image:
+  docker:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -66,7 +64,6 @@ jobs:
           echo "IMAGE_ARCH=${json_arch:-linux/amd64,linux/arm64}" >> $GITHUB_ENV
           echo "WORKFLOW_GRYPE_SEVERITY_CUTOFF=${json_grype_severity:-high}" >> $GITHUB_ENV;
           echo "WORKFLOW_GITHUB_RELEASE=${input_release:-true}" >> $GITHUB_ENV;
-          echo "WORKFLOW_DISPATCH=${input_dispatch:-true}" >> $GITHUB_ENV;
 
           : # create tags for semver, stable and other shenanigans
           LOCAL_SHA=$(git rev-parse --short HEAD)
@@ -75,20 +72,28 @@ jobs:
           LOCAL_SEMVER_PATCH=$(awk -F. '{ print $3 }' <<< ${json_semver_version})
           LOCAL_SEMVER_PREFIX=""
           LOCAL_SEMVER_SUFFIX=""
+          LOCAL_SEMVER_RC=""
           LOCAL_TAGS="${LOCAL_IMAGE}:${LOCAL_SHA}"
           if [ ! -z ${input_semverprefix} ]; then LOCAL_SEMVER_PREFIX="${input_semverprefix}-"; fi
           if [ ! -z ${input_semversuffix} ]; then LOCAL_SEMVER_SUFFIX="-${input_semversuffix}"; fi
+          if [ ! -z ${json_semver_rc} ]; then LOCAL_SEMVER_RC="-${json_semver_rc}"; fi
           if [ ! -z ${LOCAL_SEMVER_MAJOR} ]; then LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:${LOCAL_SEMVER_PREFIX}${LOCAL_SEMVER_MAJOR}${LOCAL_SEMVER_SUFFIX}"; fi
           if [ ! -z ${LOCAL_SEMVER_MINOR} ]; then LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:${LOCAL_SEMVER_PREFIX}${LOCAL_SEMVER_MAJOR}.${LOCAL_SEMVER_MINOR}${LOCAL_SEMVER_SUFFIX}"; fi
           if [ ! -z ${LOCAL_SEMVER_PATCH} ]; then LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:${LOCAL_SEMVER_PREFIX}${LOCAL_SEMVER_MAJOR}.${LOCAL_SEMVER_MINOR}.${LOCAL_SEMVER_PATCH}${LOCAL_SEMVER_SUFFIX}"; fi
-          if echo "${LOCAL_TAGS}" | grep -q "${json_semver_stable}" ; then LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:stable"; fi
-          if echo "${LOCAL_TAGS}" | grep -q "${json_semver_latest}" ; then LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:latest"; fi
-          if [ ! -z ${json_semver_tags} ]; then SPECIAL_LOCAL_TAGS=$(echo ${json_semver_tags} | sed 's/,/ /g'); for LOCAL_TAG in ${json_semver_tags}; do LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:${LOCAL_TAG}"; done; fi
+          if echo "${LOCAL_TAGS}" | grep -q "${json_semver_stable}" ; then LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:${LOCAL_SEMVER_PREFIX}stable${LOCAL_SEMVER_SUFFIX}"; fi
+          if echo "${LOCAL_TAGS}" | grep -q "${json_semver_latest}" ; then LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:${LOCAL_SEMVER_PREFIX}latest${LOCAL_SEMVER_SUFFIX}"; fi
+          if [ ! -z ${json_semver_tags} ]; then SPECIAL_LOCAL_TAGS=$(echo ${json_semver_tags} | sed 's/,/ /g'); for LOCAL_TAG in ${json_semver_tags}; do LOCAL_TAGS="${LOCAL_TAGS},${LOCAL_IMAGE}:${LOCAL_SEMVER_PREFIX}${LOCAL_TAG}${LOCAL_SEMVER_SUFFIX}"; done; fi
           echo "IMAGE_TAGS=${LOCAL_TAGS}" >> $GITHUB_ENV
 
           : # if for whatever reason UID/GID must be changed at build time
           if [ ! -z ${input_uid} ]; then echo "IMAGE_UID=${input_uid}" >> $GITHUB_ENV; else echo "IMAGE_UID=${json_uid:-1000}" >> $GITHUB_ENV; fi
           if [ ! -z ${input_gid} ]; then echo "IMAGE_GID=${input_gid}" >> $GITHUB_ENV; else echo "IMAGE_GID=${json_gid:-1000}" >> $GITHUB_ENV; fi
+
+          : # set rc, prefix or suffix globally
+          echo "IMAGE_SEMVER_PREFIX=${LOCAL_SEMVER_PREFIX}" >> $GITHUB_ENV
+          echo "IMAGE_SEMVER_SUFFIX=${LOCAL_SEMVER_SUFFIX}" >> $GITHUB_ENV
+          echo "IMAGE_VERSION_RC=${LOCAL_SEMVER_RC}" >> $GITHUB_ENV
+
 
       - name: docker / login to hub
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
@@ -109,8 +114,8 @@ jobs:
           file: arch.dockerfile
           push: true
           platforms: ${{ env.IMAGE_ARCH }}
-          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max,compression=zstd,force-compression=true
+          cache-from: type=registry,ref=${{ env.IMAGE }}:${{ env.IMAGE_SEMVER_PREFIX }}buildcache${{ env.IMAGE_SEMVER_SUFFIX }}
+          cache-to: type=registry,ref=${{ env.IMAGE }}:${{ env.IMAGE_SEMVER_PREFIX }}buildcache${{ env.IMAGE_SEMVER_SUFFIX }},mode=max,compression=zstd,force-compression=true
           build-args: |
             APP_IMAGE=${{ env.IMAGE }}
             APP_NAME=${{ env.json_name }}
@@ -118,32 +123,29 @@ jobs:
             APP_ROOT=${{ env.json_root }}
             APP_UID=${{ env.IMAGE_UID }}
             APP_GID=${{ env.IMAGE_GID }}
-            NO_CACHE=$(date +%s)
+            APP_VERSION_PREFIX=${{ env.IMAGE_SEMVER_PREFIX }}
+            APP_VERSION_SUFFIX=${{ env.IMAGE_SEMVER_SUFFIX }}
+            APP_VERSION_RC=${{ env.IMAGE_VERSION_RC }}
+            APP_NO_CACHE=$(date +%s)
           tags: |
-            ${{ env.IMAGE }}:grype
+            ${{ env.IMAGE }}:${{ env.IMAGE_SEMVER_PREFIX }}grype${{ env.IMAGE_SEMVER_SUFFIX }}
 
       - name: grype / scan
         id: scan
         uses: anchore/scan-action@abae793926ec39a78ab18002bc7fc45bbbd94342
         with:
-          image: ${{ env.IMAGE }}:grype
+          image: ${{ env.IMAGE }}:${{ env.IMAGE_SEMVER_PREFIX }}grype${{ env.IMAGE_SEMVER_SUFFIX }}
           severity-cutoff: ${{ env.WORKFLOW_GRYPE_SEVERITY_CUTOFF }}
 
       - name: grype / report / print
         if: success() || failure()
         run: cat ${{ steps.scan.outputs.sarif }}
 
-      - name: grype / report / annotation
-        if: success() || failure()
-        uses: Miragon/sarif-report-parse@f8bcc5ece9c2b9a786ff4e7392cca2bb72ae8b4b
-        with:
-          sarif-file: ${{ steps.scan.outputs.sarif }}
-
       - name: grype / delete tag
         if: success() || failure()
         run: |
           curl --request DELETE \
-            --url https://hub.docker.com/v2/repositories/${{ env.IMAGE }}/tags/grype/ \
+            --url https://hub.docker.com/v2/repositories/${{ env.IMAGE }}/tags/${{ env.IMAGE_SEMVER_PREFIX }}grype${{ env.IMAGE_SEMVER_SUFFIX }}/ \
             --header 'authorization: jwt ${{ secrets.DOCKER_TOKEN }}' \
             --header 'content-type: application/json' \
             --fail
@@ -162,8 +164,8 @@ jobs:
           sbom: true
           provenance: mode=max
           platforms: ${{ env.IMAGE_ARCH }}
-          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max,compression=zstd,force-compression=true
+          cache-from: type=registry,ref=${{ env.IMAGE }}:${{ env.IMAGE_SEMVER_PREFIX }}buildcache${{ env.IMAGE_SEMVER_SUFFIX }}
+          cache-to: type=registry,ref=${{ env.IMAGE }}:${{ env.IMAGE_SEMVER_PREFIX }}buildcache${{ env.IMAGE_SEMVER_SUFFIX }},mode=max,compression=zstd,force-compression=true
           build-args: |
             APP_IMAGE=${{ env.IMAGE }}
             APP_NAME=${{ env.json_name }}
@@ -171,7 +173,10 @@ jobs:
             APP_ROOT=${{ env.json_root }}
             APP_UID=${{ env.IMAGE_UID }}
             APP_GID=${{ env.IMAGE_GID }}
-            NO_CACHE=$(date +%s)
+            APP_VERSION_PREFIX=${{ env.IMAGE_SEMVER_PREFIX }}
+            APP_VERSION_SUFFIX=${{ env.IMAGE_SEMVER_SUFFIX }}
+            APP_VERSION_RC=${{ env.IMAGE_VERSION_RC }}
+            APP_NO_CACHE=$(date +%s)
           tags: |
             ${{ env.IMAGE_TAGS }}
 
@@ -209,10 +214,3 @@ jobs:
           provider: dockerhub
           short_description: ${{ env.json_readme_description }}
           readme_file: 'README.md'
-
-      - name: github / dispatch workflow
-        if: env.WORKFLOW_DISPATCH == 'true' && env.json_dispatch_workflow != null
-        uses: benc-uk/workflow-dispatch@e2e5e9a103e331dad343f381a29e654aea3cf8fc
-        with:
-          workflow: ${{ env.json_dispatch_workflow }}
-          token: "${{ secrets.REPOSITORY_TOKEN }}"

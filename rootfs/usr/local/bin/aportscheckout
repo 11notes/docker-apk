@@ -1,14 +1,16 @@
 #!/bin/ash
-  if [ ! -z "${1}" ]; then
-    eleven log info "sparse checkout ${2} on ${1}"
-    BRANCH=${APORTS}/${1}
-    if [ ! -d "${BRANCH}" ]; then
-      git clone --filter=tree:0 --no-checkout --depth 1 --sparse https://gitlab.alpinelinux.org/alpine/aports.git -b ${1}-stable ${BRANCH}
+  if [ ! -z "${3}" ]; then
+    eleven log info "sparse checkout ${1}@${2} on ${3}"
+    BRANCH_DST=${APORTS}/${3}
+    if [ ! -d "${BRANCH_DST}" ]; then
+      BRANCH="${3}"
+      if [ echo "${BRANCH}" | grep -qE "[0-9]{1}.[0-9]{2}" ]; then
+        BRANCH="${BRANCH}-stable"
+      fi
+      git clone --filter=tree:0 --no-checkout --depth 1 --sparse https://gitlab.alpinelinux.org/alpine/aports.git -b ${BRANCH} ${BRANCH_DST}
     fi
-    cd ${BRANCH}
-    for PKG in ${2}; do
-      git sparse-checkout add main/${PKG}
-    done
+    cd ${BRANCH_DST}
+    git sparse-checkout add ${2}/${1}
     git checkout
-    cp -R ./main/* /src
+    cp -R ./${2}/* /src
   fi

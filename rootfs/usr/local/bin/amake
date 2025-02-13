@@ -1,6 +1,6 @@
 #!/bin/ash
-  if [ ! -z "${2}" ]; then
-    aportscheckout ${2} "${1}"
+  if [ ! -z "${3}" ]; then
+    aportscheckout ${1} ${2} ${3}
   fi
 
   for SRC in /src/* ; do

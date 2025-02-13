@@ -5,15 +5,21 @@
 
 **Build Alpine apk on the fly**
 
+# MAIN TAGS 🏷️
+These are the main tags for the image. There is also a tag for each commit and its shorthand sha256 value.
+
+* [3.21](https://hub.docker.com/r/11notes/apk/tags?name=3.21)
+* [stable](https://hub.docker.com/r/11notes/apk/tags?name=stable)
+
 # SYNOPSIS 📖
-**What can I do with this?** This image will let you build your own custom apk’s for Alpine in a self-containing and easy manner. Simply add all the projects you want to build to the ```/src``` directory and execute ```amake```. This will create all your apk’s and put them into ```/apk``` for further use. This image provides a sparse checkout of aports from Alpine under /.aports. You can also sparse checkout and build official packages from different releases by simply calling ```amake python3 3.18``` which would build python3 in the latest version of [Alpine 3.18](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/python3).
+**What can I do with this?** This image will let you build your own custom apk’s for Alpine in a self-containing and easy manner. Simply add all the projects you want to build to the ```/src``` directory and execute ```amake```. This will create all your apk’s and put them into ```/apk``` for further use. This image provides a sparse checkout of aports from Alpine under /.aports. You can also sparse checkout and build official packages from different releases by simply calling ```amake python3 main 3.18``` which would build python3 in the latest version of [Alpine 3.18](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/python3) from main.
 
 # BUILD 🚧
 ```dockerfile
 FROM 11notes/apk:stable AS build
 # build your apk
 RUN set -ex; \
-  amake python3 3.19
+  amake python3 main 3.19
 
 FROM 11notes/alpine:stable
 # copy apk
@@ -53,4 +59,4 @@ RUN set -ex; \
 * Use Let’s Encrypt DNS-01 challenge to obtain valid SSL certificates for your services
   
 # ElevenNotes™️
-This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-apk/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-apk/issues), thanks. You can find all my repositories on [github](https://github.com/11notes?tab=repositories).
+This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-apk/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-apk/issues), thanks. If you have a question or inputs please create a new [discussion](https://github.com/11notes/docker-apk/discussions) instead of an issue. You can find all my other repositories on [github](https://github.com/11notes?tab=repositories).
