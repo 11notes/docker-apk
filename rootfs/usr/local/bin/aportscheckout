@@ -4,8 +4,11 @@
     BRANCH_DST=${APORTS}/${3}
     if [ ! -d "${BRANCH_DST}" ]; then
       BRANCH="${3}"
-      if [ echo "${BRANCH}" | grep -qE "[0-9]{1}.[0-9]{2}" ]; then
+      if echo "${BRANCH}" | grep -qE "[0-9]{1}.[0-9]{2}"; then
         BRANCH="${BRANCH}-stable"
+      fi
+      if [ "${BRANCH}" = "edge" ]; then
+        BRANCH="master"
       fi
       git clone --filter=tree:0 --no-checkout --depth 1 --sparse https://gitlab.alpinelinux.org/alpine/aports.git -b ${BRANCH} ${BRANCH_DST}
     fi
