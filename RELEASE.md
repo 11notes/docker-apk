@@ -1,2 +1,2 @@
 ### 🪄 Features
-* add apk index
+* add path selection on aportscheckout
