@@ -5,13 +5,17 @@
   
   "semver":{
     "version":"3.21",
-    "stable":"3.21"
+    "stable":"3.21",
+    "latest":"3.21"
   },
 
   "readme":{
-    "description":"Build Alpine apk on the fly",
+    "description":"Build Alpine apk, quick and easy",
     "parent":{
       "image":"11notes/alpine:3.21"
+    },
+    "built":{
+      "alpine":"https://www.alpinelinux.org/"
     }
   }
 }
