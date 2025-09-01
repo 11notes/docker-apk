@@ -1,41 +1,62 @@
-ARG APP_VERSION=stable
+# ╔═════════════════════════════════════════════════════╗
+# ║                       SETUP                         ║
+# ╚═════════════════════════════════════════════════════╝
+# GLOBAL
+  ARG APP_UID=1000 \
+      APP_GID=1000 \
+      APP_VERSION=3.22
 
-# :: Util
-  FROM 11notes/util AS util
+ # :: FOREIGN IMAGES
+  FROM 11notes/util:bin AS util
 
-# :: Header
-  FROM 11notes/alpine:${APP_VERSION}
+# ╔═════════════════════════════════════════════════════╗
+# ║                       IMAGE                         ║
+# ╚═════════════════════════════════════════════════════╝
+# :: HEADER
+  FROM alpine:${APP_VERSION}
 
-  # :: arguments
-    ARG TARGETARCH
-    ARG APP_IMAGE
-    ARG APP_NAME
-    ARG APP_VERSION
-    ARG APP_ROOT
+  # :: default arguments
+    ARG TARGETPLATFORM \
+        TARGETOS \
+        TARGETARCH \
+        TARGETVARIANT \
+        APP_IMAGE \
+        APP_NAME \
+        APP_VERSION \
+        APP_ROOT \
+        APP_UID \
+        APP_GID \
+        APP_NO_CACHE
 
-  # :: environment
-    ENV APP_IMAGE=${APP_IMAGE}
-    ENV APP_NAME=${APP_NAME}
-    ENV APP_VERSION=${APP_VERSION}
-    ENV APP_ROOT=${APP_ROOT}
+  # :: default environment
+    ENV APP_IMAGE=${APP_IMAGE} \
+        APP_NAME=${APP_NAME} \
+        APP_VERSION=${APP_VERSION} \
+        APP_ROOT=${APP_ROOT}
 
+  # :: app specific environment  
     ENV APORTS=${APP_ROOT}/.aports
 
   # :: multi-stage
-    COPY --from=util /usr/local/bin/ /usr/local/bin
+    COPY --from=util / /
 
-# :: Run
-  USER root
-
-  # :: prepare image
+  # :: setup
     RUN set -ex; \
       apk --no-cache --update add \
+        ca-certificates \
+        tini \
+        curl \
+        tzdata \
         shadow \
         alpine-conf \
         alpine-sdk \
         ccache \
         git \
         doas;
+
+    RUN set -ex; \
+      addgroup --gid 1000 -S docker; \
+      adduser --uid 1000 -D -S -h ${APP_ROOT} -s /sbin/nologin -G docker docker;
 
     RUN set -ex; \
       mkdir -p ${APORTS}; \
@@ -47,7 +68,6 @@ ARG APP_VERSION=stable
         /apk \
         /src;
 
-  # :: install application
     RUN set -ex; \
       addgroup docker wheel; \
       addgroup docker abuild; \
@@ -66,10 +86,10 @@ ARG APP_VERSION=stable
       RUN set -ex; \
         find ${APP_ROOT}/.abuild -name '*.pub' -exec cp "{}" /etc/apk/keys \;
 
-  # :: copy filesystem changes and set correct permissions
     COPY ./rootfs /
+    
     RUN set -ex; \
       chmod +x -R /usr/local/bin;
 
-# :: Start
+# :: EXECUTE
   USER docker

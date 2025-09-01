@@ -4,13 +4,13 @@
   "root":"/build",
   
   "semver":{
-    "version":"stable"
+    "version":"3.22"
   },
 
   "readme":{
     "description":"Build Alpine apk, quick and easy",
     "parent":{
-      "image":"11notes/alpine:stable"
+      "image":"alpine:3.22"
     },
     "built":{
       "alpine":"https://www.alpinelinux.org/"
