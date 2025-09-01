@@ -29,6 +29,15 @@ ARG APP_VERSION=stable
 
   # :: prepare image
     RUN set -ex; \
+      apk --no-cache --update add \
+        shadow \
+        alpine-conf \
+        alpine-sdk \
+        ccache \
+        git \
+        doas;
+
+    RUN set -ex; \
       mkdir -p ${APORTS}; \
       mkdir -p /apk; \
       mkdir -p /src; \
@@ -36,17 +45,10 @@ ARG APP_VERSION=stable
       chown -R 1000:1000 \
         ${APP_ROOT} \
         /apk \
-        /src; \
-      apk update;
+        /src;
 
   # :: install application
     RUN set -ex; \
-      apk --no-cache --update add \
-        alpine-conf \
-        alpine-sdk \
-        ccache \
-        git \
-        doas; \
       addgroup docker wheel; \
       addgroup docker abuild; \
       mkdir -p /var/cache/distfiles; \
