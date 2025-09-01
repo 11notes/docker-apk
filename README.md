@@ -43,6 +43,7 @@ RUN set -ex; \
 These are the main tags for the image. There is also a tag for each commit and its shorthand sha256 value.
 
 * [3.22](https://hub.docker.com/r/11notes/apk/tags?name=3.22)
+* [stable](https://hub.docker.com/r/11notes/apk/tags?name=stable)
 
 ### There is no latest tag, what am I supposed to do about updates?
 It is of my opinion that the ```:latest``` tag is dangerous. Many times, I’ve introduced **breaking** changes to my images. This would have messed up everything for some people. If you don’t want to change the tag to the latest [semver](https://semver.org/), simply use the short versions of [semver](https://semver.org/). Instead of using ```:3.22``` you can use ```:3```. Since on each new version these tags are updated to the latest version of the software, using them is identical to using ```:latest``` but at least fixed to a major or minor version.
@@ -74,4 +75,4 @@ docker pull quay.io/11notes/apk:3.22
 # ElevenNotes™️
 This image is provided to you at your own risk. Always make backups before updating an image to a different version. Check the [releases](https://github.com/11notes/docker-apk/releases) for breaking changes. If you have any problems with using this image simply raise an [issue](https://github.com/11notes/docker-apk/issues), thanks. If you have a question or inputs please create a new [discussion](https://github.com/11notes/docker-apk/discussions) instead of an issue. You can find all my other repositories on [github](https://github.com/11notes?tab=repositories).
 
-*created 01.09.2025, 12:50:49 (CET)*
+*created 01.09.2025, 13:07:52 (CET)*
