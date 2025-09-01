@@ -38,7 +38,7 @@
     ENV APORTS=${APP_ROOT}/.aports
 
   # :: multi-stage
-    COPY --from=util / /
+    COPY --from=util /usr/local/bin /usr/local/bin
 
   # :: setup
     RUN set -ex; \
