@@ -66,7 +66,8 @@
       chown -R 1000:1000 \
         ${APP_ROOT} \
         /apk \
-        /src;
+        /src; \
+      apk update;
 
     RUN set -ex; \
       addgroup docker wheel; \
